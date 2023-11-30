@@ -9,7 +9,7 @@ import {CountriesStoreService} from '../countries-store/countries-store.service'
 })
 export class CountriesControlsService {
 
-  nameCtrl = new FormControl('', { nonNullable: true });
+  nameCtrl = new FormControl('', {nonNullable: true});
   #countriesStoreService = inject(CountriesStoreService);
 
   constructor() {
