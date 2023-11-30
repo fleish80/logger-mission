@@ -67,9 +67,18 @@ describe('LoggerService', () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('essage: Http failure response for (unknown url): undefined Test HTTP error, timestamp:'));
   });
 
-  it('should not log', () => {
+  it('should not log - prod is false', () => {
     setTestBed( {...loggerInfo, prod: false});
-    service = TestBed.inject(LoggerService);
+    const exceptionError: ExceptionMessage = { message: 'Test exception', stack: 'Test stack'};
+    const httpErrorResponse: HttpErrorResponse = new HttpErrorResponse({statusText: 'Test HTTP error'});
+    service.log(exceptionError);
+    service.log(httpErrorResponse);
+    expect(localStorage.getItem('error message - 1')).toBeNull();
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+  });
+
+  it('should not log - logToConsole, logToLocalStorage are false', () => {
+    setTestBed( {...loggerInfo, logToLocalStorage: false, logToConsole: false});
     const exceptionError: ExceptionMessage = { message: 'Test exception', stack: 'Test stack'};
     const httpErrorResponse: HttpErrorResponse = new HttpErrorResponse({statusText: 'Test HTTP error'});
     service.log(exceptionError);
