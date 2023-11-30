@@ -2,22 +2,32 @@
   "name": "main",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "prefix": "esquare-mission",
+  "prefix": "df",
   "sourceRoot": "apps/main/src",
   "tags": [],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/apps/main",
         "index": "apps/main/src/index.html",
         "main": "apps/main/src/main.ts",
-        "polyfills": ["zone.js"],
+        "polyfills": [
+          "zone.js"
+        ],
         "tsConfig": "apps/main/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
-        "assets": ["apps/main/src/favicon.ico", "apps/main/src/assets"],
-        "styles": ["apps/main/src/styles.scss"],
+        "assets": [
+          "apps/main/src/favicon.ico",
+          "apps/main/src/assets"
+        ],
+        "styles": [
+          "@angular/material/prebuilt-themes/indigo-pink.css",
+          "apps/main/src/styles.scss"
+        ],
         "scripts": []
       },
       "configurations": {
@@ -67,14 +77,21 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "lintFilePatterns": ["apps/main/**/*.ts", "apps/main/**/*.html"]
+        "lintFilePatterns": [
+          "apps/main/**/*.ts",
+          "apps/main/**/*.html"
+        ]
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
       "options": {
         "jestConfig": "apps/main/jest.config.ts"
       }

@@ -1,14 +1,16 @@
-import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { NxWelcomeComponent } from './nx-welcome.component';
+import {Component} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
 
 @Component({
   standalone: true,
-  imports: [NxWelcomeComponent, RouterModule],
-  selector: 'esquare-mission-root',
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+  imports: [
+    RouterOutlet
+  ],
+  selector: 'df-root',
+  template: `
+      <router-outlet/>
+  `,
+  styles: ``,
 })
 export class AppComponent {
-  title = 'main';
 }
