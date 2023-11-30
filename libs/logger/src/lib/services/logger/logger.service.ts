@@ -3,12 +3,12 @@ import {ExceptionMessage} from "../../models/exception-message.model";
 import {LoggerOptions} from "../../models/logger-options.model";
 import {HttpErrorResponse} from "@angular/common/http";
 import {HttpMessage} from "../../models/http-message.model";
-import {Subject} from "rxjs";
+import {bufferTime, Subject} from "rxjs";
 import {ENVIRONMENT} from "../../tokens/environment.token";
-import {debounceTime} from "rxjs/operators";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 
-const DEBOUNCE_TIME = 500;
+const DEBOUNCE_TIME = 5000;
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +18,7 @@ export class LoggerService {
   #counter = 0;
   #debounceSubject = new Subject<ExceptionMessage | HttpErrorResponse | null>();
   #environment = inject(ENVIRONMENT);
+
 
   constructor() {
     this.#debounceMessage();
@@ -52,16 +53,18 @@ export class LoggerService {
   }
 
   #debounceMessage() {
-    this.#debounceSubject.pipe(debounceTime(DEBOUNCE_TIME))
-      .subscribe((error) => {
-        if (error) {
-          if (error instanceof HttpErrorResponse) {
-            this.#logHttpError(error);
-          } else {
-            this.#logException(error!);
-          }
+    this.#debounceSubject.pipe(
+      bufferTime(DEBOUNCE_TIME),
+      takeUntilDestroyed()
+    ).subscribe((errors) => {
+      errors.forEach(error => {
+        if (error instanceof HttpErrorResponse) {
+          this.#logHttpError(error);
+        } else {
+          this.#logException(error!);
         }
-      })
+      });
+    })
   }
 
 }
