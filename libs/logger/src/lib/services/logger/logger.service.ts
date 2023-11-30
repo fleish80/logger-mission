@@ -1,14 +1,10 @@
 import {inject, Injectable} from '@angular/core';
-import {ExceptionMessage} from "../../models/exception-message.model";
-import {LoggerOptions} from "../../models/logger-options.model";
-import {HttpErrorResponse} from "@angular/common/http";
-import {HttpMessage} from "../../models/http-message.model";
-import {bufferTime, Subject} from "rxjs";
-import {ENVIRONMENT} from "../../tokens/environment.token";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {ExceptionMessage} from '../../models/exception-message.model';
+import {HttpErrorResponse} from '@angular/common/http';
+import {bufferTime, Subject} from 'rxjs';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {LOGGER_INFO} from '../../tokens/logger.token';
 
-
-const DEBOUNCE_TIME = 5000;
 
 @Injectable({
   providedIn: 'root'
@@ -17,44 +13,51 @@ export class LoggerService {
 
   #counter = 0;
   #debounceSubject = new Subject<ExceptionMessage | HttpErrorResponse | null>();
-  #environment = inject(ENVIRONMENT);
+  #loggerInfo = inject(LOGGER_INFO);
 
 
   constructor() {
+    const errorCounter = localStorage.getItem('error-counter');
+    this.#counter = errorCounter ? +errorCounter : 0;
     this.#debounceMessage();
   }
 
   log(error: ExceptionMessage | HttpErrorResponse) {
-    if (this.#environment.prod) {
+    if (this.#loggerInfo.prod) {
       this.#debounceSubject.next(error);
     }
   }
 
-  #logException({message, stack}: ExceptionMessage, options?: LoggerOptions) {
-    options = {...{console: true, localstorage: true}, ...options};
-    const updatedMessage: ExceptionMessage = {message, stack, timestamp: new Date().toString()};
-    if (options.console) {
-      console.error(updatedMessage);
+  #logException({message, stack}: ExceptionMessage) {
+    const displayedMessage = this.#loggerInfo.exceptionMessageFormat
+      .replace(/{{message}}/g, message)
+      .replace(/{{stack}}/g, stack)
+      .replace(/{{timestamp}}/g, new Date().toString());
+    if (this.#loggerInfo.logToConsole) {
+      console.error(displayedMessage);
     }
-    if (options.localstorage) {
-      localStorage.setItem(`error message - ${++this.#counter}`, JSON.stringify(updatedMessage));
+    if (this.#loggerInfo.logToLocalStorage) {
+      localStorage.setItem(`error message - ${++this.#counter}`, displayedMessage);
+      localStorage.setItem('error-counter', this.#counter.toString());
     }
   }
 
-  #logHttpError({message}: HttpErrorResponse, options?: LoggerOptions) {
-    options = {...{console: true, localstorage: true}, ...options};
-    const updatedMessage: HttpMessage = {message, timestamp: new Date().toString()};
-    if (options.console) {
-      console.error(updatedMessage);
+  #logHttpError({message}: HttpErrorResponse) {
+    const displayedMessage = this.#loggerInfo.httpMessageFormat
+      .replace(/{{message}}/g, message)
+      .replace(/{{timestamp}}/g, new Date().toString());
+    if (this.#loggerInfo.logToConsole) {
+      console.error(displayedMessage);
     }
-    if (options.localstorage) {
-      localStorage.setItem(`error message - ${++this.#counter}`, JSON.stringify(updatedMessage));
+    if (this.#loggerInfo.logToLocalStorage) {
+      localStorage.setItem(`error message - ${++this.#counter}`, JSON.stringify(displayedMessage));
+      localStorage.setItem('error-counter', this.#counter.toString());
     }
   }
 
   #debounceMessage() {
     this.#debounceSubject.pipe(
-      bufferTime(DEBOUNCE_TIME),
+      bufferTime(this.#loggerInfo.bufferTime!),
       takeUntilDestroyed()
     ).subscribe((errors) => {
       errors.forEach(error => {
