@@ -44,7 +44,12 @@
               "maximumError": "4kb"
             }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "fileReplacements": [
+            {
+              "replace": "apps/main/src/environments/environment.ts",
+              "with": "apps/main/src/environments/environment.prod.ts"
+            }]
         },
         "development": {
           "buildOptimizer": false,
@@ -53,6 +58,19 @@
           "extractLicenses": false,
           "sourceMap": true,
           "namedChunks": true
+        },
+        "prod": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true,
+          "fileReplacements": [
+            {
+              "replace": "apps/main/src/environments/environment.ts",
+              "with": "apps/main/src/environments/environment.prod.ts"
+            }]
         }
       },
       "defaultConfiguration": "production"
@@ -65,6 +83,9 @@
         },
         "development": {
           "buildTarget": "main:build:development"
+        },
+        "prod": {
+          "buildTarget": "main:build:prod"
         }
       },
       "defaultConfiguration": "development"
