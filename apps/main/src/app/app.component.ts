@@ -1,8 +1,7 @@
-import {Component, inject} from '@angular/core';
+import {Component} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatButtonModule} from '@angular/material/button';
-import {LoggerService} from "@esquare-mission/logger";
 
 @Component({
   standalone: true,
@@ -17,20 +16,5 @@ import {LoggerService} from "@esquare-mission/logger";
   `
 })
 export class AppComponent {
-
-  #loggerService = inject(LoggerService);
-
-  constructor() {
-    try {
-
-      let arr: number[] | null = [];
-      arr[10] = 5;
-      arr = null;
-      arr![10] = 5;
-    } catch (error) {
-      this.#loggerService.log(error as any)
-    }
-  }
-
 
 }

@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@esquare-mission/logger": ["libs/logger/src/index.ts"]
+      "@logger-mission/logger": ["libs/logger/src/index.ts"]
     },
     "strictPropertyInitialization": false
   },
