@@ -13,21 +13,20 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   standalone: true,
   imports: [MatFormFieldModule, JsonPipe, MatInputModule, ReactiveFormsModule, CountriesTableComponent, MatProgressSpinnerModule],
   template: `
-  <mat-form-field appearance="outline">
-    <mat-label>Countries</mat-label>
-    <input matInput [formControl]="nameCtrl">
-  </mat-form-field>
-  
-  @if (loaded()) {
-    @if (loading()) {
-      <mat-spinner/>
+    <mat-form-field appearance="outline">
+      <mat-label>Countries</mat-label>
+      <input matInput [formControl]="nameCtrl">
+    </mat-form-field>
+
+    @if (loaded()) {
+      @if (loading()) {
+        <mat-spinner />
+      } @else if (error()) {
+        <span>{{ error()!.message }}</span>
+      } @else {
+        <df-countries-table [countries]="countries()" />
+      }
     }
-    @else if (error()) {
-      <span>{{error()!.message}}</span>
-    } @else {
-      <df-countries-table [countries]="countries()"/>
-    } 
-  }
 
 
   `,
