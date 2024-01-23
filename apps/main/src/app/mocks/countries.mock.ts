@@ -1,5 +1,3 @@
-import { Country } from "../models/country.model";
-
 export const countriesMock = [
     {name: {common: 'Israel'}},
     {name: {common: 'USA'}},
