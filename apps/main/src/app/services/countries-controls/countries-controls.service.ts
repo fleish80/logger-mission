@@ -18,7 +18,7 @@ export class CountriesControlsService {
         skipWhile(name => name.length < 2),
         takeUntilDestroyed())
       .subscribe(name => {
-        this.#countriesStoreService.load(name);
+        this.#countriesStoreService.getCountries(name);
       })
   }
 }

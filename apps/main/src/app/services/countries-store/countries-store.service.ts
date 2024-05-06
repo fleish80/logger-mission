@@ -9,6 +9,7 @@ import { tapResponse } from '@ngrx/operators';
 
 type State = {
   countries: Country[],
+  countriesMap: Record<string, Country[]>,
   loading: boolean;
   loaded: boolean;
   error: HttpErrorResponse | null
@@ -20,30 +21,45 @@ type State = {
 export class CountriesStoreService extends signalStore(
   withState<State>({
     countries: [],
+    countriesMap: {},
     loading: false,
     loaded: false,
     error: null
   }),
   withMethods((store, countriesService = inject(CountriesService)) => ({
 
+    getCountries(name: string) {
+      const countries = store.countriesMap()[name];
+      if (countries) {
+        patchState(store, { countries, error: null });
+      } else {
+        this.load(name);
+      }
+    },
+
     load: rxMethod<string>(
       pipe(
         tap(() => patchState(store, { loading: true })),
         switchMap(name => countriesService.getCountries(name).pipe(
           tapResponse({
-            next: (countries) => patchState(store, {
-              countries,
-              loading: false,
-              loaded: true,
-              error: null
-            }),
+            next: (countries) => {
+              const countriesMap = store.countriesMap();
+              countriesMap[name] = countries;
+              patchState(store, {
+                countries,
+                countriesMap,
+                loading: false,
+                loaded: true,
+                error: null
+              });
+            },
             error: (error: HttpErrorResponse) => {
               patchState(store, {
                 countries: [],
                 loading: false,
                 loaded: true,
                 error
-              })
+              });
             }
           })
         ))))
